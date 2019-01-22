@@ -1,4 +1,23 @@
 # Lab: Build a Continuous Deployment Pipeline with Jenkins and Kubernetes
+gcloud container clusters get-credentials jenkins-cd --zone us-east1-d --project kubejenkin \
+ && kubectl port-forward --namespace jenkins $(kubectl get pod --namespace jenkins --selector="app=master" --output jsonpath='{.items[0].metadata.name}') 8080:8080
+
+
+INGRESS
+or
+change type : LoadBalancer in service_jenkins.yaml
+
+and 
+
+kubectl  describe services --namespace jenkins
+
+get the ip from 
+
+LoadBalancer Ingress:     35.243.201.13
+
+http://35.243.201.13:8080
+
+
 
 For a more in depth best practices guide, go to the solution posted [here](https://cloud.google.com/solutions/jenkins-on-container-engine).
 
@@ -61,7 +80,7 @@ $ gcloud container clusters create jenkins-cd \
   --num-nodes 3 \
   --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw"
 ```
-
+--machine-type=g1-small 
 Once that operation completes download the credentials for your cluster using the [gcloud CLI](https://cloud.google.com/sdk/):
 ```shell
 $ gcloud container clusters get-credentials jenkins-cd
@@ -100,7 +119,9 @@ Here you'll create a Deployment running a Jenkins container with a persistent di
 First, set the password for the default Jenkins user. Edit the password in `jenkins/k8s/options` with the password of your choice by replacing _CHANGE_ME_. To Generate a random password and replace it in the file, you can run:
 
 ```shell
-$ PASSWORD=`openssl rand -base64 15`; echo "Your password is $PASSWORD"; sed -i.bak s#CHANGE_ME#$PASSWORD# jenkins/k8s/options
+$ PASSWORD=`openssl rand -base64 15`; 
+echo "Your password is $PASSWORD"; 
+sed -i.bak s#CHANGE_ME#$PASSWORD# jenkins/k8s/options
 Your password is 2UyiEo2ezG/CKnUcgPxt
 ```
 
